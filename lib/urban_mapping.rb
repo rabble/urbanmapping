@@ -4,7 +4,7 @@ require 'net-http'
 require 'uri'
 require 'JSON'
 
-@apikey = '8uaxxg6j74c3299wr7e3gbev'
+@apikey = 'xyz'
 
 options = { :method => 'getNeighborhoodsByLatLng', :lat=>'37.765185', :lng=>'-122.420354', :apikey=>'8uaxxg6j74c3299wr7e3gbev' }
 

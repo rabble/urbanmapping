@@ -1,5 +1,11 @@
 A simple library to provide a nice interface to Urbanmapping.com's RESTful neighborhood API. 
 
+urban_mapping = UrbanMapping.new('your api key here')
+response = urban_mapping.query( { :method => 'getNeighborhoodsByLatLng', :lat=>'37.765185', :lng=>'-122.420354'} )
+response = urban_mapping.getNeighborhoodsByLatLng( {:lat=>'37.765185', :lng=>'-122.420354'} )
+
+Returns ruby objects... 
+
 created by rabble - evan@protest.net
 
 Copyright (c) 2009 Evan Henshaw-Plath

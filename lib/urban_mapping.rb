@@ -1,24 +1,43 @@
 #urbanmapping rest api
 
-require 'net-http'
-require 'uri'
-require 'JSON'
+require 'rubygems'
+require 'httparty'
 
-@apikey = 'xyz'
+class UrbanMapping
+  include HTTParty
+  format :json
+  
+  URBAN_MAPPING_API = {
+    'getNeighborhoodsByLatLng' => [:lat, :lng],
+    'getNearestNeighborhood'   => [:lat, :lng],
+    'getNeighborhoodsByExtent' => [:swlat, :swlng, :nelat, :nelng],
+    'getNeighborhoodsByAddress'=> [:street, :city, :state, :country],
+    'getNeighborhoodsByCityStateCountry' => [:city, :state, :country],
+    'getNeighborhoodsByPostalCode' => [:postalcode],
+    'getNeighborhoodsByName' => [:name],
+    'getNeighborhoodDetail' => [:neighborhoodId],
+    'getNeighborhoodRelationships' => [:neighborhoodId]
+  }
+  
+  def initialize(apikey)
+    @apikey = apikey
+  end
 
-options = { :method => 'getNeighborhoodsByLatLng', :lat=>'37.765185', :lng=>'-122.420354', :apikey=>'8uaxxg6j74c3299wr7e3gbev' }
-
-
-def get(options=>{})
-  #need to move these to use UrbanMapping::Exception
-	raise( StandardError('method required for urbanmapping') ) if options[:method].nil?
-	raise( StandardError('apikey required for urbanmapping') ) if @apikey.nil?
-	
-	method = options.delete(:method)
-	#need to do url encoding
-	options_array = options.map {|key,value| "#{key}=#{value}"}
-	params = options_array.join('&')
-	
-	response = Net::HTTP.get URI.parse( "http://api0.urbanmapping.com/neighborhoods/rest/" + method + "?" + params)
-
+  def query(options={})
+    check_requirements(options)
+    
+  	method = options.delete(:method)
+  	options.merge!({:apikey => @apikey})
+    UrbanMapping.get("http://api0.urbanmapping.com/neighborhoods/rest/" + method, :query => options)
+  end
+  
+  def check_requirements(options)
+	  raise( 'apikey required for urbanmapping' ) if @apikey.nil?
+    raise( 'method required for urbanmapping' ) if options[:method].nil?
+    raise( "method #{options[:method]} urbanmapping" ) unless URBAN_MAPPING_API.has_key?( options[:method] )
+    missing_params = []
+    URBAN_MAPPING_API[options[:method]].each {|param| missing_params<<param unless options.has_key?(param) }
+    raise( "#{options[:method]} requires #{missing_params.join(", ")} parameters" ) unless missing_params.empty?
+  end
 end
+

@@ -22,6 +22,11 @@ class UrbanMapping
   def initialize(apikey)
     @apikey = apikey
   end
+  
+  def method_missing(method, *args)
+    query(method, *args) if URBAN_MAPPING_API.has_key?( method )
+    super
+  end
 
   def query(options={})
     check_requirements(options)
